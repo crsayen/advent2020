@@ -1,12 +1,13 @@
 total = 0
+bigstr = ''
 with open('input6') as f:
-    group = []
     for line in f:
-        group = (group + [c for c in line])
-        if line == '\n':
-            total += len(set(group))
-            group = []
-    total += len(set(group))
+        bigstr += line
+
+groups = bigstr.split('\n\n')
+
+for group in groups:
+    total += len(set([c for c in group.replace('\n', '')]))
         
 
 print(total)
