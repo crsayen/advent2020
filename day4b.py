@@ -1,17 +1,6 @@
 import string
 data = None
 
-fields = [
-    'byr',
-    'iyr',
-    'eyr',
-    'hgt',
-    'hcl',
-    'ecl',
-    'pid',
-    'cid'
-]
-
 validators = {
     'byr': lambda byr: byr.isnumeric() and len(byr) == 4 and 1919 < int(byr) < 2003,
     'iyr': lambda iyr: iyr.isnumeric() and len(iyr) == 4 and 2009 < int(iyr) < 2021,
@@ -23,25 +12,23 @@ validators = {
 }
 
 def checkValid(passport):
-    for field in fields:
+    for field, validator in validators.items():
         if field == 'cid': continue
         value = passport.get(field)
         if value in ['', None]:
             return False
-        if not validators[field](value):
-            print(field, value)
-            print('')
+        if not validator(value):
             return False
     return True
 
 with open('input4') as f:
     nvalid = 0
-    passport = {field: None for field in fields}
+    passport = {field: None for field in validators.keys()}
     for line in f:
         line = unicode(line.replace('\n', ''), 'utf-8')
         if line == '':
             if checkValid(passport): nvalid += 1
-            passport = {field: None for field in fields}
+            passport = {field: None for field in validators.keys()}
         chunks = line.split(' ')
         for chunk in chunks:
             keyVal = chunk.split(':')
