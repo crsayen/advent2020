@@ -1,11 +1,11 @@
 from itertools import product
 cube = None
-sideLen = 18
+sideLen = 20
 with open('input17') as f:
     layer = []
     for line in f:
         line = line.replace('\n', '')
-        padrow = [False] * 5
+        padrow = [False] * ((sideLen - len(line)) // 2)
         layer.append( [*padrow, *[c == '#' for c in line], *padrow])
     padlayer = [[False] * sideLen] * ((sideLen - len(layer)) // 2)
     layer = [*padlayer, *layer, *padlayer]
