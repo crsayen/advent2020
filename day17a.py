@@ -1,62 +1,47 @@
-from copy import deepcopy
-from itertools import permutations
-cube = []
-sideLen = None
+from itertools import product
+cube = None
+sideLen = 18
 with open('input17') as f:
     layer = []
     for line in f:
         line = line.replace('\n', '')
-        layer.append([c == '#' for c in line])
-    sideLen = len(layer)
-    cube = [layer, *([[[False] * sideLen] * sideLen] * (sideLen - 1))]
-
+        padrow = [False] * 5
+        layer.append( [*padrow, *[c == '#' for c in line], *padrow])
+    padlayer = [[False] * sideLen] * ((sideLen - len(layer)) // 2)
+    layer = [*padlayer, *layer, *padlayer]
+    padtop = [[[False] * sideLen] * sideLen] * (sideLen // 2)
+    padbottom = [[[False] * sideLen] * sideLen] * ((sideLen // 2) - 1)
+    cube = tuple(map(tuple, map(tuple, [*padtop, layer, *padbottom])))
 
 def getNeighbors(coords):
     neighbors = []
-    for p in [
-        [0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,0,1],
-        [0,0,-1],[0,-1,0],[0,-1,-1],[-1,0,0],[-1,-1,0],[-1,0,-1],
-        [0,-1,1],[-1,1,0],[-1,0,1],
-        [0,1,-1],[1,-1,0],[1,0,-1],
-        [1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],[-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1],
-    ]:
-        newCoords = deepcopy(coords)
+    for p in product((-1, 0, 1), repeat=3):
+        newCoords = [None, None, None]
         for i,n in enumerate(p):
-            newCoords[i] += n
-        if all(c < sideLen - 1 and c > -1 for c in newCoords):
-            neighbors.append(deepcopy(newCoords))
+            newCoords[i] = coords[i] + n
+        try:
+            cube[newCoords[0]][newCoords[1]][newCoords[2]]
+            if coords != newCoords: neighbors.append(newCoords)
+        except: pass
     return neighbors
 
 for cyclen in range(6):
-    print(f'cycle: {cyclen}')
-    newCube = deepcopy(cube)
-    for x in range(sideLen):
-        for y in range(sideLen):
-            for z in range(sideLen):
-                nActiveNeighbors = 0
-                for [nbx, nby, nbz] in getNeighbors([x, y, z]):
-                    if cube[nbx][nby][nbz]:
-                        nActiveNeighbors += 1
-                if cube[x][y][z]:
-                    if nActiveNeighbors not in [2,3]:
-                        newCube[x][y][z] == False
-                else:
-                    if nActiveNeighbors == 3:
-                        print(f'switching: {[x,y,z]}')
-                        newCube[x][y][z] == True
-    """ if cyclen == 5:
-        for lyr in newCube:
-            for ln in lyr:
-                print(ln)
-            print('\n') """
-    cube = deepcopy(newCube)
+    newCube = list(list(list(list(row) for row in plane)) for plane in cube)
+    for (x, y, z) in product(range(sideLen), repeat=3):
+        nActiveNeighbors = 0
+        for [nbx, nby, nbz] in getNeighbors([x, y, z]):
+            if cube[nbx][nby][nbz]:
+                nActiveNeighbors += 1
+        if cube[x][y][z] == True:
+            newCube[x][y][z] = nActiveNeighbors in [2,3]
+        else:
+            newCube[x][y][z] = nActiveNeighbors == 3
+    cube = tuple(tuple(tuple(tuple(row) for row in plane)) for plane in newCube)
 
 count = 0
 
-for x in range(sideLen):
-    for y in range(sideLen):
-        for z in range(sideLen):
-            if cube[x][y][z]: count += 1
+for (x, y, z) in product(range(sideLen), repeat=3):
+    if cube[x][y][z]: count += 1
 
 print(count)
 
