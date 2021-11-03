@@ -36,4 +36,5 @@ with open('input4') as f:
     if checkValid(passport): nvalid += 1
 
 print(nvalid)
-        
+
+

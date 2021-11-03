@@ -6,7 +6,7 @@ with open("input2") as f:
         passwords.append(
             {
                 "pos1": int(minmax[0]) - 1,
-                "pos2": int(minmax[1] - 1),
+                "pos2": int(minmax[1]) - 1,
                 "character": chunks[1][0:-1],
                 "password": chunks[2],
             }

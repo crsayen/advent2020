@@ -9,5 +9,4 @@ for ln in range(1, goalIndex + 1):
     for start in range(0, goalIndex + 1 - ln):
         subArr = inp[start: start + ln]
         if sum(subArr) == goal:
-            print(subArr)
             print(max(subArr) + min(subArr))
